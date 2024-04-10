@@ -310,7 +310,7 @@ class ModuleYearView extends EventsExt
 
                 // Get all events of a day
                 $arrEvents = array();
-                if (is_array($arrAllEvents[$intKey])) {
+                if (array_key_exists($intKey, $arrAllEvents) && is_array($arrAllEvents[$intKey])) {
                     foreach ($arrAllEvents[$intKey] as $v) {
                         foreach ($v as $vv) {
                             // set class recurring
