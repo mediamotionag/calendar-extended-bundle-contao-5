@@ -20,7 +20,6 @@
 // Palette for calendar
 use Contao\Backend;
 use Contao\System;
-use NotificationCenter\Model\Notification;
 
 $GLOBALS['TL_DCA']['tl_module']['palettes']['calendar'] = str_replace
 (
@@ -427,10 +426,18 @@ class calendar_Ext extends Backend
 
 		$return = array();
 
-		$objNotifications = Notification::findAll();
-		if ($objNotifications !== null) {
-			while ($objNotifications->next()) {
-				$return[$objNotifications->id] = $objNotifications->title;
+		$arrNotifications = $this->connection->createQueryBuilder()
+		->select('id', 'title')
+		->from('tl_nc_notification')
+		->orderBy('title')
+		->executeQuery()
+		->fetchAllKeyValue();
+
+		die('<pre>'.print_r($arrNotifications, true) .'</pre>');
+
+		if ($arrNotifications !== null) {
+			foreach($arrNotifications as $arrNotification) {
+				$return[$arrNotification['id']] = $arrNotification['title'];
 			}
 		}
 
@@ -443,9 +450,7 @@ class calendar_Ext extends Backend
 	 */
 	public function getTimeRange()
 	{
-		$columnFields = null;
-
-		$columnFields = array
+		return array
 		(
 			'time_from' => array(
 				'label' => &$GLOBALS['TL_LANG']['tl_module']['time_range_from'],
@@ -462,8 +467,6 @@ class calendar_Ext extends Backend
 				'eval' => array('rgxp' => 'time', 'doNotCopy' => true, 'style' => 'width:120px', 'datepicker' => true, 'tl_class' => 'wizard')
 			)
 		);
-
-		return $columnFields;
 	}
 
 
@@ -472,9 +475,8 @@ class calendar_Ext extends Backend
 	 */
 	public function getRange()
 	{
-		$columnFields = null;
 
-		$columnFields = array
+		return array
 		(
 			'date_from' => array(
 				'label' => &$GLOBALS['TL_LANG']['tl_module']['range_from'],
@@ -491,8 +493,6 @@ class calendar_Ext extends Backend
 				'eval' => array('rgxp' => 'datim', 'doNotCopy' => true, 'style' => 'width:120px', 'datepicker' => true, 'tl_class' => 'wizard')
 			)
 		);
-
-		return $columnFields;
 	}
 
 
