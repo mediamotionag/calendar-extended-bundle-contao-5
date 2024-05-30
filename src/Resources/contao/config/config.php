@@ -1,15 +1,17 @@
-<?php 
+<?php
 
 /**
  * Contao Open Source CMS
- * 
+ *
  * Copyright (C) 2005-2012 Leo Feyer
- * 
- * @package   Contao 
- * @author    Kester Mielke 
- * @license   LGPL 
- * @copyright Kester Mielke 2010-2013 
+ *
+ * @package   Contao
+ * @author    Kester Mielke
+ * @license   LGPL
+ * @copyright Kester Mielke 2010-2013
  */
+
+use Contao\ArrayUtil;
 
 $GLOBALS['TL_CONFIG']['tl_calendar_events']['maxRepeatExceptions'] = 365;
 
@@ -31,13 +33,13 @@ $GLOBALS['TL_CONFIG']['tl_calendar_events']['moveDays'] = 7;
  */
 $GLOBALS['TL_CONFIG']['tl_calendar_events']['moveTimes'] = '10:00|22:00|30';
 
-$GLOBALS['TL_LANG']['DAYS']['sunday']    = 0;
-$GLOBALS['TL_LANG']['DAYS']['monday']    = 1;
-$GLOBALS['TL_LANG']['DAYS']['tuesday']   = 2;
+$GLOBALS['TL_LANG']['DAYS']['sunday'] = 0;
+$GLOBALS['TL_LANG']['DAYS']['monday'] = 1;
+$GLOBALS['TL_LANG']['DAYS']['tuesday'] = 2;
 $GLOBALS['TL_LANG']['DAYS']['wednesday'] = 3;
-$GLOBALS['TL_LANG']['DAYS']['thursday']  = 4;
-$GLOBALS['TL_LANG']['DAYS']['friday']    = 5;
-$GLOBALS['TL_LANG']['DAYS']['saturday']  = 6;
+$GLOBALS['TL_LANG']['DAYS']['thursday'] = 4;
+$GLOBALS['TL_LANG']['DAYS']['friday'] = 5;
+$GLOBALS['TL_LANG']['DAYS']['saturday'] = 6;
 
 $GLOBALS['TL_CONFIG']['tl_calendar_events']['weekdays'][0] = 'sunday';
 $GLOBALS['TL_CONFIG']['tl_calendar_events']['weekdays'][1] = 'monday';
@@ -56,49 +58,49 @@ $GLOBALS['TL_CONFIG']['tl_calendar_events']['filter']['location_plz'] = [];
 /**
  * Front end modules
  */
-array_insert($GLOBALS['FE_MOD'], 99, array
+ArrayUtil::arrayInsert($GLOBALS['FE_MOD'], 99, array
 (
-    'events' => array
-    (
-        'timetable'	        => 'Kmielke\CalendarExtendedBundle\ModuleTimeTable',
-        'yearview'	        => 'Kmielke\CalendarExtendedBundle\ModuleYearView',
-        'evr_registration'  => 'Kmielke\CalendarExtendedBundle\ModuleEventRegistration',
-        'fullcalendar'      => 'Kmielke\CalendarExtendedBundle\ModuleFullcalendar'
-    )
+	'events' => array
+	(
+		'timetable' => 'Kmielke\CalendarExtendedBundle\ModuleTimeTable',
+		'yearview' => 'Kmielke\CalendarExtendedBundle\ModuleYearView',
+		'evr_registration' => 'Kmielke\CalendarExtendedBundle\ModuleEventRegistration',
+		'fullcalendar' => 'Kmielke\CalendarExtendedBundle\ModuleFullcalendar'
+	)
 ));
 
 // Replace Contao Module
-$GLOBALS['FE_MOD']['events']['calendar']    = 'Kmielke\CalendarExtendedBundle\ModuleCalendar';
-$GLOBALS['FE_MOD']['events']['eventlist']   = 'Kmielke\CalendarExtendedBundle\ModuleEventlist';
-$GLOBALS['FE_MOD']['events']['eventmenu']   = 'Kmielke\CalendarExtendedBundle\ModuleEventMenu';
+$GLOBALS['FE_MOD']['events']['calendar'] = 'Kmielke\CalendarExtendedBundle\ModuleCalendar';
+$GLOBALS['FE_MOD']['events']['eventlist'] = 'Kmielke\CalendarExtendedBundle\ModuleEventlist';
+$GLOBALS['FE_MOD']['events']['eventmenu'] = 'Kmielke\CalendarExtendedBundle\ModuleEventMenu';
 $GLOBALS['FE_MOD']['events']['eventreader'] = 'Kmielke\CalendarExtendedBundle\ModuleEventReader';
 
 /**
  * BACK END FORM FIELDS
  */
 
-array_insert($GLOBALS['BE_FFL'], 99, array
+ArrayUtil::arrayInsert($GLOBALS['BE_FFL'], 99, array
 (
-    'timePeriodExt'     => 'Kmielke\CalendarExtendedBundle\TimePeriodExt',
+	'timePeriodExt' => 'Kmielke\CalendarExtendedBundle\TimePeriodExt',
 ));
 
 // config.php
 $GLOBALS['NOTIFICATION_CENTER']['NOTIFICATION_TYPE']['event_registration'] = array
 (
-    // Type
-    'registration_status' => array(
-        'recipients'           => array('recipient_email', 'admin_email'),
-        'email_subject'        => array('page_title', 'recipient_*'),
-        'email_text'           => array('recipient_*', 'raw_data', ),
-        'email_html'           => array('recipient_*', 'raw_data', ),
-        'email_sender_name'    => array('admin_email', 'page_title'),
-        'email_sender_address' => array('admin_email'),
-        'email_recipient_cc'   => array('recipient_email'),
-        'email_recipient_bcc'  => array('recipient_email'),
-        'email_replyTo'        => array('recipient_email'),
-        'file_name'            => array('recipient_email'),
-        'file_content'         => array('recipient_email')
-    )
+	// Type
+	'registration_status' => array(
+		'recipients' => array('recipient_email', 'admin_email'),
+		'email_subject' => array('page_title', 'recipient_*'),
+		'email_text' => array('recipient_*', 'raw_data',),
+		'email_html' => array('recipient_*', 'raw_data',),
+		'email_sender_name' => array('admin_email', 'page_title'),
+		'email_sender_address' => array('admin_email'),
+		'email_recipient_cc' => array('recipient_email'),
+		'email_recipient_bcc' => array('recipient_email'),
+		'email_replyTo' => array('recipient_email'),
+		'file_name' => array('recipient_email'),
+		'file_content' => array('recipient_email')
+	)
 );
 
 /**

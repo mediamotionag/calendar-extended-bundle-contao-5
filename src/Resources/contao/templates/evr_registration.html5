@@ -6,14 +6,14 @@
 
 <?php if ($this->hasError): ?>
 
-    <div><h3>Folgende Fehler sind aufgetreten</h3></div>
-    <?php foreach ($this->msgError as $key => $error): ?>
-        <?php echo $error; ?><br/>
-    <?php endforeach; ?>
+	<div><h3>Folgende Fehler sind aufgetreten</h3></div>
+	<?php foreach ($this->msgError as $key => $error): ?>
+		<?php echo $error; ?><br/>
+	<?php endforeach; ?>
 
 <?php else: ?>
 
-    <?= $this->msg; ?>
+	<?= $this->msg; ?>
 
 <?php endif; ?>
 
