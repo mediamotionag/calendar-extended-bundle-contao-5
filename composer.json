@@ -20,16 +20,11 @@
   ],
   "require": {
     "php": ">=5.6.0",
-    "contao/core-bundle": "^4.4",
-    "contao/calendar-bundle": "^4.4",
+    "contao/core-bundle": "^5.3",
+    "contao/calendar-bundle": "^5.3",
     "menatwork/contao-multicolumnwizard-bundle": "^3.4",
-    "terminal42/notification_center": "^1.5 || ^2.0"
-  },
-  "require-dev": {
-    "terminal42/contao-leads": "^1.4"
-  },
-  "suggest": {
-    "terminal42/contao-leads": "Supports user registration - but only compatible with leads in version 1!"
+    "terminal42/notification_center": "^2.0",
+    "terminal42/contao-leads": "^3.0"
   },
   "autoload": {
     "psr-4": {
