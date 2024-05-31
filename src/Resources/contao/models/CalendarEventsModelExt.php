@@ -10,9 +10,9 @@
 
 namespace Kmielke\CalendarExtendedBundle;
 
-use CalendarEventsModel;
-use Date;
-use Model\Collection;
+use Contao\CalendarEventsModel;
+use Contao\Date;
+use Contao\Model\Collection;
 use function is_array;
 
 /**
@@ -100,8 +100,8 @@ class CalendarEventsModelExt extends CalendarEventsModel
 	public static function findOverlappingByPid($intPid, $intStart, $intEnd, array $arrOptions = array())
 	{
 		$t = static::$strTable;
-		$intStart = intval($intStart);
-		$intEnd = intval($intEnd);
+		$intStart = (int)$intStart;
+		$intEnd = (int)$intEnd;
 
 		$arrColumns = array("$t.pid=? AND (($t.startTime>=$intStart AND $t.startTime<=$intEnd) OR ($t.endTime>=$intStart AND $t.endTime<=$intEnd) OR ($t.startTime<=$intStart AND $t.endTime>=$intEnd) OR (($t.recurring=1 OR $t.recurringExt=1) AND ($t.recurrences=0 OR $t.repeatEnd>=$intStart) AND $t.startTime<=$intEnd) OR ($t.repeatFixedDates is not null AND $t.repeatEnd>=$intStart))");
 

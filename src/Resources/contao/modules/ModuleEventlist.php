@@ -13,6 +13,8 @@ namespace Kmielke\CalendarExtendedBundle;
 use Contao\BackendTemplate;
 use Contao\CalendarEventsModel;
 use Contao\Config;
+use Contao\CoreBundle\Exception\PageNotFoundException;
+use Contao\FrontendUser;
 use Contao\System;
 use Contao\Date;
 use Contao\Events;
@@ -20,7 +22,6 @@ use Contao\FilesModel;
 use Contao\FrontendTemplate;
 use Contao\Input;
 use OutOfBoundsException;
-use Contao\PageError404;
 use Contao\PageModel;
 use Contao\Pagination;
 use Contao\Validator;
@@ -101,9 +102,10 @@ class ModuleEventlist extends EventsExt
 				$this->Date = new Date();
 			}
 		} catch (OutOfBoundsException $e) {
-			/** @var PageError404 $objHandler */
-			$objHandler = new $GLOBALS['TL_PTY']['error_404']();
-			$objHandler->generate($objPage->id);
+
+			// Throw 404 page not found exception
+			throw new PageNotFoundException('Page not found: ' . System::getContainer()->get('request_stack')->getCurrentRequest()->getUri());
+
 		}
 
 		list($strBegin, $strEnd, $strEmpty) = $this->getDatesFromFormat($this->Date, $this->cal_format);
@@ -140,10 +142,17 @@ class ModuleEventlist extends EventsExt
 		// we have to check if we have to show recurrences and pass it to the getAllEventsExt function...
 		$showRecurrences = ((int)$this->showRecurrences === 1) ? false : true;
 
-		if ('FE' === TL_MODE && true === FE_USER_LOGGED_IN) {
-			// calendar-extended-bundel assets
-			$assets_path = 'bundles/calendarextended/js';
-			$GLOBALS['TL_JAVASCRIPT'][] = $assets_path . '/event-register.js';
+		if (System::getContainer()->get('contao.routing.scope_matcher')->isFrontendRequest(System::getContainer()->get('request_stack')->getCurrentRequest() ?? Request::create(''))){
+
+			// Get the FrontendUser
+			$User = FrontendUser::getInstance();
+
+			if($User){
+				// calendar-extended-bundel assets
+				$assets_path = 'bundles/calendarextended/js';
+				$GLOBALS['TL_JAVASCRIPT'][] = $assets_path . '/event-register.js';
+			}
+
 		}
 
 		// Get all events
@@ -324,9 +333,9 @@ class ModuleEventlist extends EventsExt
 
 			// Do not index or cache the page if the page number is outside the range
 			if ($page < 1 || $page > max(ceil($total / $this->perPage), 1)) {
-				/** @var PageError404 $objHandler */
-				$objHandler = new $GLOBALS['TL_PTY']['error_404']();
-				$objHandler->generate($objPage->id);
+
+				// Throw 404 page not found exception
+				throw new PageNotFoundException('Page not found: ' . System::getContainer()->get('request_stack')->getCurrentRequest()->getUri());
 			}
 
 			$offset = ($page - 1) * $this->perPage;
@@ -391,7 +400,7 @@ class ModuleEventlist extends EventsExt
 			// Add the template variables
 			$objTemplate->classList = $event['class'] . ((($headerCount % 2) == 0) ? ' even' : ' odd') . (($headerCount == 0) ? ' first' : '') . ($blnIsLastEvent ? ' last' : '') . ' cal_' . $event['parent'];
 			$objTemplate->classUpcoming = $event['class'] . ((($eventCount % 2) == 0) ? ' even' : ' odd') . (($eventCount == 0) ? ' first' : '') . ((($offset + $eventCount + 1) >= $limit) ? ' last' : '') . ' cal_' . $event['parent'];
-			$objTemplate->readMore = specialchars(sprintf($GLOBALS['TL_LANG']['MSC']['readMore'], $event['title']));
+			$objTemplate->readMore = \Contao\StringUtil::specialchars(sprintf($GLOBALS['TL_LANG']['MSC']['readMore'], $event['title']));
 			$objTemplate->more = $GLOBALS['TL_LANG']['MSC']['more'];
 			$objTemplate->locationLabel = $GLOBALS['TL_LANG']['MSC']['location'];
 
@@ -410,17 +419,27 @@ class ModuleEventlist extends EventsExt
 			if ($event['addImage'] && $event['singleSRC'] != '') {
 				$objModel = FilesModel::findByUuid($event['singleSRC']);
 
+				$rootDir = System::getContainer()->getParameter('kernel.project_dir');
+
 				if ($objModel === null) {
 					if (!Validator::isUuid($event['singleSRC'])) {
 						$objTemplate->text = '<p class="error">' . $GLOBALS['TL_LANG']['ERR']['version2format'] . '</p>';
 					}
-				} elseif (is_file(TL_ROOT . '/' . $objModel->path)) {
+				} elseif (is_file($rootDir . '/' . $objModel->path)) {
 					if ($imgSize) {
 						$event['size'] = $imgSize;
 					}
 
 					$event['singleSRC'] = $objModel->path;
-					$this->addImageToTemplate($objTemplate, $event);
+
+					$objImageStudio = \Contao\System::getContainer()->get('contao.image.studio');
+					$figureBuilder = $objImageStudio->createFigureBuilder();
+					$figureBuilder->fromFilesModel($objModel);
+					if ($imgSize) {
+						$figureBuilder->setSize($imgSize);
+					}
+					$figure = $figureBuilder->build();
+					$objTemplate->setData($figure->getLegacyTemplateData());
 				}
 			}
 
@@ -543,7 +562,7 @@ class ModuleEventlist extends EventsExt
 
 		// Show the event reader if an item has been selected
 		if ($this->cal_readerModule > 0 && (isset($_GET['events']) || (Config::get('useAutoItem') && isset($_GET['auto_item'])))) {
-			return $this->getFrontendModule($this->cal_readerModule, $this->strColumn);
+			return self::getFrontendModule($this->cal_readerModule, $this->strColumn);
 		}
 
 		// Tag the calendars (see #2137)

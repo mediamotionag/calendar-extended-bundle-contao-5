@@ -11,9 +11,9 @@
 namespace Kmielke\CalendarExtendedBundle;
 
 
-use Database;
-use Database\Result;
-use Model;
+use Contao\Database;
+use Contao\Database\Result;
+use Contao\Model;
 
 /**
  * Reads leads
@@ -54,9 +54,7 @@ class CalendarLeadsModel extends Model
 
 		// und ausführen
 		$objResult = Database::getInstance()->prepare($sql)->execute($fid, $eid, $email);
-		$found = ($objResult->email === $email) ? false : true;
-
-		return $found;
+		return ($objResult->email === $email) ? false : true;
 	}
 
 
@@ -82,9 +80,7 @@ class CalendarLeadsModel extends Model
 
 		// und ausführen
 		$objResult = Database::getInstance()->prepare($sql)->execute($fid, $eid);
-		$count = ($objResult->count) ? $objResult->count : 0;
-
-		return $count;
+		return ($objResult->count) ? $objResult->count : 0;
 	}
 
 

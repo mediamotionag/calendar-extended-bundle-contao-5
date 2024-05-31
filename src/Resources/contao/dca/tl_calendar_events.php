@@ -476,6 +476,13 @@ $GLOBALS['TL_DCA']['tl_calendar_events']['fields']['repeatEnd'] = array
 	'sql' => "int(10) unsigned NOT NULL default '0'"
 );
 
+use Contao\CalendarModel;
+use Contao\Database;
+use Contao\DataContainer;
+use Contao\Date;
+use Contao\FormModel;
+use Contao\Input;
+use Contao\Message;
 use Kmielke\CalendarExtendedBundle\CalendarEventsModelExt;
 use Kmielke\CalendarExtendedBundle\CalendarLeadsModel;
 
@@ -621,7 +628,7 @@ class tl_calendar_events_ext extends \Contao\Backend
 
 				if (count($nonUniqueEvents) > 0) {
 					Message::addError($GLOBALS['TL_LANG']['tl_calendar_events']['nonUniqueEvents'] . ' (' . implode(',', $nonUniqueEvents) . ')');
-					$this->redirect($this->addToUrl());
+					self::redirect(self::addToUrl());
 				}
 			}
 		}
@@ -686,7 +693,7 @@ class tl_calendar_events_ext extends \Contao\Backend
 
 		// Set the repeatEnd date
 		$arrFixDates = array();
-		$arrayFixedDates = deserialize($dc->activeRecord->repeatFixedDates) ? deserialize($dc->activeRecord->repeatFixedDates) : null;
+		$arrayFixedDates = \Contao\StringUtil::deserialize($dc->activeRecord->repeatFixedDates) ? \Contao\StringUtil::deserialize($dc->activeRecord->repeatFixedDates) : null;
 		if (!is_null($arrayFixedDates)) {
 			usort($arrayFixedDates, function ($a, $b) {
 				$intTimeStampA = strtotime($a["new_repeat"] . $a['new_start']);
@@ -736,7 +743,7 @@ class tl_calendar_events_ext extends \Contao\Backend
 
 		// changed default recurring
 		if ($dc->activeRecord->recurring) {
-			$arrRange = deserialize($dc->activeRecord->repeatEach);
+			$arrRange = \Contao\StringUtil::deserialize($dc->activeRecord->repeatEach);
 
 			$arg = isset($arrRange['value']) ? $arrRange['value'] * $dc->activeRecord->recurrences : 0;
 			$unit = $arrRange['unit'] ?? null;
@@ -786,8 +793,8 @@ class tl_calendar_events_ext extends \Contao\Backend
 				}
 
 				$value = (int)$arrRange['value'];
-				$wdays = (is_array(deserialize($dc->activeRecord->repeatWeekday)))
-					? deserialize($dc->activeRecord->repeatWeekday)
+				$wdays = (is_array(\Contao\StringUtil::deserialize($dc->activeRecord->repeatWeekday)))
+					? \Contao\StringUtil::deserialize($dc->activeRecord->repeatWeekday)
 					: false;
 
 				if ($unit === 'days' && $value === 1 && $wdays) {
@@ -830,7 +837,7 @@ class tl_calendar_events_ext extends \Contao\Backend
 
 		// extended version recurring
 		if ($dc->activeRecord->recurringExt) {
-			$arrRange = deserialize($dc->activeRecord->repeatEachExt);
+			$arrRange = \Contao\StringUtil::deserialize($dc->activeRecord->repeatEachExt);
 
 			$arg = isset($arrRange['value']) ? $arrRange['value'] : 0;
 			$unit = $arrRange['unit'] ?? null;
@@ -940,7 +947,7 @@ class tl_calendar_events_ext extends \Contao\Backend
 				$unit = $GLOBALS['TL_CONFIG']['tl_calendar_events']['weekdays'][$dc->activeRecord->weekday];
 
 				// exception rules
-				$rows = deserialize($dc->activeRecord->repeatExceptionsInt);
+				$rows = \Contao\StringUtil::deserialize($dc->activeRecord->repeatExceptionsInt);
 
 				// run thru all dates
 				foreach ($rows as $row) {
@@ -993,10 +1000,10 @@ class tl_calendar_events_ext extends \Contao\Backend
 			// ... and last but not least by range
 			if ($dc->activeRecord->repeatExceptionsPer) {
 				// exception rules
-				$rows = deserialize($dc->activeRecord->repeatExceptionsPer);
+				$rows = \Contao\StringUtil::deserialize($dc->activeRecord->repeatExceptionsPer);
 
 				// all recurrences...
-				$repeatDates = deserialize($dc->activeRecord->repeatDates);
+				$repeatDates = \Contao\StringUtil::deserialize($dc->activeRecord->repeatDates);
 
 				// run thru all dates
 				foreach ($rows as $row) {
@@ -1031,7 +1038,7 @@ class tl_calendar_events_ext extends \Contao\Backend
 
 			// first we check the exceptions by date...
 			if ($dc->activeRecord->repeatExceptions) {
-				$rows = deserialize($dc->activeRecord->repeatExceptions);
+				$rows = \Contao\StringUtil::deserialize($dc->activeRecord->repeatExceptions);
 				// set repeatEnd
 				// my be we have an exception move that is later then the repeatEnd
 				foreach ($rows as $row) {
@@ -1119,7 +1126,7 @@ class tl_calendar_events_ext extends \Contao\Backend
 	 */
 	public function getmaxperson($var, $dc)
 	{
-		$values = deserialize($var);
+		$values = \Contao\StringUtil::deserialize($var);
 		if (!is_array($values)) {
 			$values = array();
 			$values[0]['mini'] = 0;
@@ -1149,8 +1156,6 @@ class tl_calendar_events_ext extends \Contao\Backend
 	 */
 	public function setmaxperson($dc)
 	{
-		$columnFields = null;
-
 		$columnFields = array
 		(
 			'mini' => array
@@ -1215,7 +1220,7 @@ class tl_calendar_events_ext extends \Contao\Backend
 			}
 
 			if ($activeRecord->repeatDates) {
-				$arrDates = deserialize($activeRecord->repeatDates);
+				$arrDates = \Contao\StringUtil::deserialize($activeRecord->repeatDates);
 				if (is_array($arrDates)) {
 					if ($var1->id == "repeatExceptions") {
 						// fill array for option date
@@ -1360,8 +1365,6 @@ class tl_calendar_events_ext extends \Contao\Backend
 	 */
 	public function listFixedDates($var1)
 	{
-		$columnFields = null;
-
 		$columnFields = array
 		(
 			'new_repeat' => array(

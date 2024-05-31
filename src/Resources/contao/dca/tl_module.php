@@ -535,7 +535,7 @@ class calendar_Ext extends Backend
 	 */
 	public function getCalendarTemplates()
 	{
-		return $this->getTemplateGroup('cal_');
+		return self::getTemplateGroup('cal_');
 	}
 
 

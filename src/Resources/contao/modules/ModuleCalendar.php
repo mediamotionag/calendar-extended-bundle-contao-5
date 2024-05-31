@@ -10,17 +10,18 @@
 
 namespace Kmielke\CalendarExtendedBundle;
 
-use BackendTemplate;
-use Config;
+use Contao\BackendTemplate;
+use Contao\Config;
 use Contao\System;
-use Date;
-use Environment;
+use Contao\Date;
+use Contao\Environment;
 use Exception;
-use FrontendTemplate;
-use Input;
+use Contao\FrontendTemplate;
+use Contao\Input;
 use OutOfBoundsException;
-use PageError404;
-use PageModel;
+use Symfony\Component\HttpFoundation\Request;
+use Contao\PageModel;
+use Symfony\Component\Routing\Exception\ResourceNotFoundException;
 
 /**
  * Front end module "calendar".
@@ -67,15 +68,19 @@ class ModuleCalendar extends EventsExt
 			/** @var PageModel $objPage */
 			global $objPage;
 
-			/** @var PageError404 $objHandler */
-			$objHandler = new $GLOBALS['TL_PTY']['error_404']();
-			$objHandler->generate($objPage->id);
+			// Throw a 404 error
+			throw new ResourceNotFoundException('Page not found: ' . Environment::get('uri'), $objPage->row());
+
 		}
 
 		$time = Date::floorToMinute();
 
 		// Find the boundaries
-		$objMinMax = $this->Database->query("SELECT MIN(startTime) AS dateFrom, MAX(endTime) AS dateTo, MAX(repeatEnd) AS repeatUntil FROM tl_calendar_events WHERE pid IN(" . implode(',', array_map('intval', $this->cal_calendar)) . ")" . (!BE_USER_LOGGED_IN ? " AND (start='' OR start<='$time') AND (stop='' OR stop>'" . ($time + 60) . "') AND published='1'" : ""));
+
+
+		if (System::getContainer()->get('contao.routing.scope_matcher')->isBackendRequest(System::getContainer()->get('request_stack')->getCurrentRequest() ?? Request::create(''))) {
+			// Code der nur im Backend ausgeführt wird
+		}		$objMinMax = $this->Database->query("SELECT MIN(startTime) AS dateFrom, MAX(endTime) AS dateTo, MAX(repeatEnd) AS repeatUntil FROM tl_calendar_events WHERE pid IN(" . implode(',', array_map('intval', $this->cal_calendar)) . ")" . (!BE_USER_LOGGED_IN ? " AND (start='' OR start<='$time') AND (stop='' OR stop>'" . ($time + 60) . "') AND published='1'" : ""));
 
 		/** @var FrontendTemplate|object $objTemplate */
 		$objTemplate = new FrontendTemplate(($this->cal_ctemplate ? $this->cal_ctemplate : 'cal_default'));
@@ -90,13 +95,13 @@ class ModuleCalendar extends EventsExt
 		$prevYear = ($intMonth <= 1) ? ($intYear - 1) : $intYear;
 		$prevMonth = ($intMonth <= 1) ? 12 : ($intMonth - 1);
 		$lblPrevious = $GLOBALS['TL_LANG']['MONTHS'][($prevMonth - 1)] . ' ' . $prevYear;
-		$intPrevYm = intval($prevYear . str_pad($prevMonth, 2, 0, STR_PAD_LEFT));
+		$intPrevYm = (int)($prevYear . str_pad($prevMonth, 2, 0, STR_PAD_LEFT));
 
 		// Only generate a link if there are events (see #4160)
 		//if ($objMinMax->dateFrom !== null && $intPrevYm >= date('Ym', $objMinMax->dateFrom))
 		//{
 		$objTemplate->prevHref = $this->strUrl . (Config::get('disableAlias') ? '?id=' . Input::get('id') . '&amp;' : '?') . 'month=' . $intPrevYm;
-		$objTemplate->prevTitle = specialchars($lblPrevious);
+		$objTemplate->prevTitle = \Contao\StringUtil::specialchars($lblPrevious);
 		$objTemplate->prevLink = $GLOBALS['TL_LANG']['MSC']['cal_previous'] . ' ' . $lblPrevious;
 		$objTemplate->prevLabel = $GLOBALS['TL_LANG']['MSC']['cal_previous'];
 		//}
@@ -114,7 +119,7 @@ class ModuleCalendar extends EventsExt
 		//if ($objMinMax->dateTo !== null && $intNextYm <= date('Ym', max($objMinMax->dateTo, $objMinMax->repeatUntil)))
 		//{
 		$objTemplate->nextHref = $this->strUrl . (Config::get('disableAlias') ? '?id=' . Input::get('id') . '&amp;' : '?') . 'month=' . $intNextYm;
-		$objTemplate->nextTitle = specialchars($lblNext);
+		$objTemplate->nextTitle = \Contao\StringUtil::specialchars($lblNext);
 		$objTemplate->nextLink = $lblNext . ' ' . $GLOBALS['TL_LANG']['MSC']['cal_next'];
 		$objTemplate->nextLabel = $GLOBALS['TL_LANG']['MSC']['cal_next'];
 //		}
@@ -143,7 +148,7 @@ class ModuleCalendar extends EventsExt
 			/** @var BackendTemplate|object $objTemplate */
 			$objTemplate = new BackendTemplate('be_wildcard');
 
-			$objTemplate->wildcard = '### ' . utf8_strtoupper($GLOBALS['TL_LANG']['FMD']['calendar'][0]) . ' ###';
+			$objTemplate->wildcard = '### ' . strtoupper($GLOBALS['TL_LANG']['FMD']['calendar'][0]) . ' ###';
 			$objTemplate->title = $this->headline;
 			$objTemplate->id = $this->id;
 			$objTemplate->link = $this->name;
@@ -152,8 +157,8 @@ class ModuleCalendar extends EventsExt
 			return $objTemplate->parse();
 		}
 
-		$this->cal_calendar = $this->sortOutProtected(deserialize($this->cal_calendar, true));
-		$this->cal_holiday = $this->sortOutProtected(deserialize($this->cal_holiday, true));
+		$this->cal_calendar = $this->sortOutProtected(\Contao\StringUtil::deserialize($this->cal_calendar, true));
+		$this->cal_holiday = $this->sortOutProtected(\Contao\StringUtil::deserialize($this->cal_holiday, true));
 
 		// Return if there are no calendars
 		if (!is_array($this->cal_calendar) || empty($this->cal_calendar)) {
