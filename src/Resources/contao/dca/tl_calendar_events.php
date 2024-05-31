@@ -14,7 +14,7 @@
 foreach ($GLOBALS['TL_DCA']['tl_calendar_events']['config']['onsubmit_callback'] as $k => $v) {
 	if ($v[0] == 'tl_calendar_events' && $v[1] == 'adjustTime') {
 		unset($GLOBALS['TL_DCA']['tl_calendar_events']['config']['onsubmit_callback'][$k]);
-		array_insert($GLOBALS['TL_DCA']['tl_calendar_events']['config']['onsubmit_callback'], 0,
+		\Contao\ArrayUtil::arrayInsert($GLOBALS['TL_DCA']['tl_calendar_events']['config']['onsubmit_callback'], 0,
 			array(
 				array('tl_calendar_events_ext', 'adjustTime'),
 				array('tl_calendar_events_ext', 'checkOverlapping')
@@ -107,9 +107,9 @@ if (class_exists('leads\leads')) {
 }
 
 // change the default palettes
-array_insert($GLOBALS['TL_DCA']['tl_calendar_events']['palettes']['__selector__'], 99, 'recurringExt');
-array_insert($GLOBALS['TL_DCA']['tl_calendar_events']['palettes']['__selector__'], 99, 'useExceptions');
-array_insert($GLOBALS['TL_DCA']['tl_calendar_events']['palettes']['__selector__'], 99, 'useRegistration');
+\Contao\ArrayUtil::arrayInsert($GLOBALS['TL_DCA']['tl_calendar_events']['palettes']['__selector__'], 99, 'recurringExt');
+\Contao\ArrayUtil::arrayInsert($GLOBALS['TL_DCA']['tl_calendar_events']['palettes']['__selector__'], 99, 'useExceptions');
+\Contao\ArrayUtil::arrayInsert($GLOBALS['TL_DCA']['tl_calendar_events']['palettes']['__selector__'], 99, 'useRegistration');
 
 // change the default palettes
 $GLOBALS['TL_DCA']['tl_calendar_events']['subpalettes']['recurring'] = str_replace
@@ -487,7 +487,7 @@ use Kmielke\CalendarExtendedBundle\CalendarLeadsModel;
  * @author     Kester Mielke
  * @package    Controller
  */
-class tl_calendar_events_ext extends Backend
+class tl_calendar_events_ext extends \Contao\Backend
 {
 
 	/**
@@ -1345,11 +1345,11 @@ class tl_calendar_events_ext extends Backend
 			);
 
 			// add the field to the columnFields array
-			array_insert($columnFields, 0, array("exceptionTo" => $secondField));
+			\Contao\ArrayUtil::arrayInsert($columnFields, 0, array("exceptionTo" => $secondField));
 		}
 
 		// add the field to the columnFields array
-		array_insert($columnFields, 0, array("exception" => $firstField));
+		\Contao\ArrayUtil::arrayInsert($columnFields, 0, array("exception" => $firstField));
 
 		return $columnFields;
 	}

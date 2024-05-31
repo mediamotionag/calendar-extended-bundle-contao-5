@@ -18,13 +18,15 @@
 
 namespace Kmielke\CalendarExtendedBundle;
 
-use Config;
+use Contao\ArrayUtil;
+use Contao\Config;
 use Contao\Calendar;
 use Contao\CalendarModel;
 use Contao\Date;
 use Contao\Events;
+use Contao\StringUtil;
 use Exception;
-use PageModel;
+use Contao\PageModel;
 
 /**
  * Class EventExt
@@ -36,21 +38,16 @@ use PageModel;
 class EventsExt extends Events
 {
 
+	protected function compile()
+	{
+
+	}
+
 	/**
 	 * Template
 	 * @var string
 	 */
 	protected $strTemplate = '';
-
-
-	/**
-	 * Generate the module
-	 */
-	protected function compile()
-	{
-		parent::compile;
-	}
-
 
 	/**
 	 * Get all events of a certain period
@@ -138,7 +135,7 @@ class EventsExt extends Events
 				// get the event filter data
 				$filter = [];
 				if ($this->filter_fields) {
-					$filter_fields = deserialize($this->filter_fields);
+					$filter_fields = StringUtil::deserialize($this->filter_fields);
 					foreach ($filter_fields as $field) {
 						$filter[$field] = $objEvents->$field;
 					}
@@ -147,7 +144,7 @@ class EventsExt extends Events
 				}
 
 				// Count irregular recurrences
-				$arrayFixedDates = deserialize($objEvents->repeatFixedDates) ? deserialize($objEvents->repeatFixedDates) : null;
+				$arrayFixedDates = StringUtil::deserialize($objEvents->repeatFixedDates) ? StringUtil::deserialize($objEvents->repeatFixedDates) : null;
 				if (!is_null($arrayFixedDates)) {
 					foreach ($arrayFixedDates as $fixedDate) {
 						if ($fixedDate['new_repeat']) {
@@ -167,10 +164,10 @@ class EventsExt extends Events
 
 				// check the repeat values
 				if ($objEvents->recurring) {
-					$arrRepeat = deserialize($objEvents->repeatEach) ? deserialize($objEvents->repeatEach) : null;
+					$arrRepeat = StringUtil::deserialize($objEvents->repeatEach) ? StringUtil::deserialize($objEvents->repeatEach) : null;
 				}
 				if ($objEvents->recurringExt) {
-					$arrRepeat = deserialize($objEvents->repeatEachExt) ? deserialize($objEvents->repeatEachExt) : null;
+					$arrRepeat = StringUtil::deserialize($objEvents->repeatEachExt) ? StringUtil::deserialize($objEvents->repeatEachExt) : null;
 				}
 
 				// we need a counter for the recurrences if noSpan is set
@@ -224,11 +221,11 @@ class EventsExt extends Events
 
 					// now we have to take care about the exception dates to skip
 					if ($objEvents->useExceptions) {
-						$arrEventSkipInfo[$objEvents->id] = deserialize($objEvents->exceptionList);
+						$arrEventSkipInfo[$objEvents->id] = StringUtil::deserialize($objEvents->exceptionList);
 					}
 
 					// get the configured weekdays if any
-					$useWeekdays = ($weekdays = deserialize($objEvents->repeatWeekday)) ? true : false;
+					$useWeekdays = ($weekdays = StringUtil::deserialize($objEvents->repeatWeekday)) ? true : false;
 
 					// time of the next event
 					$nextTime = $objEvents->endTime;
@@ -467,14 +464,14 @@ class EventsExt extends Events
 		}
 
 		if ($arrHolidays !== null) {
-			// run thru all holiday calendars
+			// run through all holiday calendars
 			foreach ($arrHolidays as $id) {
 				$objAE = $this->Database->prepare("SELECT allowEvents FROM tl_calendar WHERE id = ?")
 					->limit(1)->execute($id);
 				$allowEvents = ($objAE->allowEvents === 1) ? true : false;
 
 				$strUrl = $this->strUrl;
-				$objCalendar = \CalendarModel::findByPk($id);
+				$objCalendar = \Contao\CalendarModel::findByPk($id);
 
 				// Get the current "jumpTo" page
 				if ($objCalendar !== null && $objCalendar->jumpTo && ($objTarget = $objCalendar->getRelated('jumpTo')) !== null) {

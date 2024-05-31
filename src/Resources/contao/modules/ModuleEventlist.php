@@ -10,20 +10,21 @@
 
 namespace Kmielke\CalendarExtendedBundle;
 
-use BackendTemplate;
-use CalendarEventsModel;
-use Config;
+use Contao\BackendTemplate;
+use Contao\CalendarEventsModel;
+use Contao\Config;
 use Contao\System;
-use Date;
-use Events;
-use FilesModel;
-use FrontendTemplate;
-use Input;
+use Contao\Date;
+use Contao\Events;
+use Contao\FilesModel;
+use Contao\FrontendTemplate;
+use Contao\Input;
 use OutOfBoundsException;
-use PageError404;
-use PageModel;
-use Pagination;
-use Validator;
+use Contao\PageError404;
+use Contao\PageModel;
+use Contao\Pagination;
+use Contao\Validator;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Class ModuleEventListExt
@@ -121,7 +122,7 @@ class ModuleEventlist extends EventsExt
 		}
 
 		// we will overwrite $strBegin, $strEnd if range_date is set
-		$arrRange = deserialize($this->range_date);
+		$arrRange = \Contao\StringUtil::deserialize($this->range_date);
 		if (is_array($arrRange) && $arrRange[0]['date_from']) {
 			$startRange = strtotime($arrRange[0]['date_from']);
 			$endRange = strtotime($arrRange[0]['date_to']);
@@ -223,7 +224,7 @@ class ModuleEventlist extends EventsExt
 					unset($event['reginfo']);
 					if (class_exists('leads\leads') && $event['useRegistration']) {
 						if ($event['regperson']) {
-							$values = deserialize($event['regperson']);
+							$values = \Contao\StringUtil::deserialize($event['regperson']);
 							if (is_array($values)) {
 								// Anmeldungen ermittlen und anzeigen
 								$eid = (int)$event['id'];
@@ -264,32 +265,26 @@ class ModuleEventlist extends EventsExt
 					// Set endtime to starttime always...
 					if ((int)$event['addTime'] === 1 && (int)$event['ignoreEndTime'] === 1) {
 						$event['time'] = Date::parse($objPage->timeFormat, $event['startTime']);
-//                        $event['date'] = \Date::parse($objPage->datimFormat, $event['startTime']) . ' - ' .   \Date::parse($objPage->dateFormat, $event['endTime']);
-//                        $event['endTime'] = '';
-//                        $event['time'] = '';
-//                        if ((int)$event['addTime'] === 1) {
-//                            $event['time'] = \Date::parse($objPage->timeFormat, $event['startTime']);
-//                        }
 					}
 
 					// check the repeat values
 					$unit = '';
 					if ($event['recurring']) {
-						$arrRepeat = deserialize($event['repeatEach']) ? deserialize($event['repeatEach']) : null;
+						$arrRepeat = \Contao\StringUtil::deserialize($event['repeatEach']) ? \Contao\StringUtil::deserialize($event['repeatEach']) : null;
 						$unit = $arrRepeat['unit'];
 					}
 					if ($event['recurringExt']) {
-						$arrRepeat = deserialize($event['repeatEachExt']) ? deserialize($event['repeatEachExt']) : null;
+						$arrRepeat = \Contao\StringUtil::deserialize($event['repeatEachExt']) ? \Contao\StringUtil::deserialize($event['repeatEachExt']) : null;
 						$unit = $arrRepeat['unit'];
 					}
 
 					// get the configured weekdays if any
-					$useWeekdays = ($weekdays = deserialize($event['repeatWeekday'])) ? true : false;
+					$useWeekdays = ($weekdays = \Contao\StringUtil::deserialize($event['repeatWeekday'])) ? true : false;
 
 					// Set the next date
 					$nextDate = null;
 					if ($event['repeatDates']) {
-						$arrNext = deserialize($event['repeatDates']);
+						$arrNext = \Contao\StringUtil::deserialize($event['repeatDates']);
 						foreach ($arrNext as $k => $nextDate) {
 							if (strtotime($nextDate) > time()) {
 								// check if we have the correct weekday
@@ -351,7 +346,7 @@ class ModuleEventlist extends EventsExt
 
 		// Override the default image size
 		if ($this->imgSize != '') {
-			$size = deserialize($this->imgSize);
+			$size = \Contao\StringUtil::deserialize($this->imgSize);
 
 			if ($size[0] > 0 || $size[1] > 0 || is_numeric($size[2]) || ($size[2][0] ?? null) === '_') {
 				$imgSize = $this->imgSize;
@@ -482,7 +477,7 @@ class ModuleEventlist extends EventsExt
 	 */
 	public function generate()
 	{
-		if (TL_MODE == 'BE') {
+		if (System::getContainer()->get('contao.routing.scope_matcher')->isBackendRequest(System::getContainer()->get('request_stack')->getCurrentRequest() ?? Request::create(''))) {
 			/** @var BackendTemplate|object $objTemplate */
 			$objTemplate = new BackendTemplate('be_wildcard');
 
@@ -495,8 +490,8 @@ class ModuleEventlist extends EventsExt
 			return $objTemplate->parse();
 		}
 
-		$this->cal_calendar = $this->sortOutProtected(deserialize($this->cal_calendar, true));
-		$this->cal_holiday = $this->sortOutProtected(deserialize($this->cal_holiday, true));
+		$this->cal_calendar = $this->sortOutProtected(\Contao\StringUtil::deserialize($this->cal_calendar, true));
+		$this->cal_holiday = $this->sortOutProtected(\Contao\StringUtil::deserialize($this->cal_holiday, true));
 
 		// Return if there are no calendars
 		if (!is_array($this->cal_calendar) || empty($this->cal_calendar)) {
@@ -524,7 +519,7 @@ class ModuleEventlist extends EventsExt
 			$this->calConf[$cal]['foreground'] = $objBG->fg_color;
 
 			if ($objBG->bg_color) {
-				list($cssColor, $cssOpacity) = deserialize($objBG->bg_color);
+				list($cssColor, $cssOpacity) = \Contao\StringUtil::deserialize($objBG->bg_color);
 
 				if (!empty($cssColor)) {
 					$this->calConf[$cal]['background'] .= 'background-color:#' . $cssColor . ';';
@@ -535,7 +530,7 @@ class ModuleEventlist extends EventsExt
 			}
 
 			if ($objBG->fg_color) {
-				list($cssColor, $cssOpacity) = deserialize($objBG->fg_color);
+				list($cssColor, $cssOpacity) = \Contao\StringUtil::deserialize($objBG->fg_color);
 
 				if (!empty($cssColor)) {
 					$this->calConf[$cal]['foreground'] .= 'color:#' . $cssColor . ';';
