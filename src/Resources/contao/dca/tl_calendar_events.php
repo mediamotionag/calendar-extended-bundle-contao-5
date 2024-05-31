@@ -497,13 +497,16 @@ use Kmielke\CalendarExtendedBundle\CalendarLeadsModel;
 class tl_calendar_events_ext extends \Contao\Backend
 {
 
+    protected $Sser;
+
 	/**
 	 * Import the back end user object
 	 */
 	public function __construct()
 	{
 		parent::__construct();
-		$this->import('BackendUser', 'User');
+
+        $this->User = \Contao\BackendUser::getInstance();
 	}
 
 
@@ -548,11 +551,6 @@ class tl_calendar_events_ext extends \Contao\Backend
 	 */
 	public function checkExceptions($varValue, DataContainer $dc)
 	{
-		if ($varValue) {
-			if (!$dc->activeRecord->recurring && !$dc->activeRecord->recurringExt) {
-				throw new Exception($GLOBALS['TL_LANG']['tl_calendar_events']['checkExceptions']);
-			}
-		}
 
 		return $varValue;
 	}
