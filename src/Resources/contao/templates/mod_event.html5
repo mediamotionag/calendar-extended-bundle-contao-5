@@ -9,12 +9,12 @@
 <!-- indexer::continue -->
 
 <?php if ($this->allowComments): ?>
-	<div class="ce_comments block">
-	<<?= $this->hlc ?>><?= $this->addComment ?></<?= $this->hlc ?>>
-	<?= implode('', $this->comments) ?>
-	<?= $this->pagination ?>
-	<?php include $this->getTemplate('mod_comment_form', 'html5'); ?>
-	</div>
+    <div class="ce_comments block">
+    <<?= $this->hlc ?>><?= $this->addComment ?></<?= $this->hlc ?>>
+    <?= implode('', $this->comments) ?>
+    <?= $this->pagination ?>
+    <?php include $this->getTemplate('mod_comment_form', 'html5'); ?>
+    </div>
 <?php endif; ?>
 
 <?php $this->endblock(); ?>

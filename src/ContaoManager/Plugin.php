@@ -24,20 +24,20 @@ use Kmielke\CalendarExtendedBundle\CalendarExtendedBundle;
  */
 class Plugin implements BundlePluginInterface
 {
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getBundles(ParserInterface $parser)
-	{
-		return [
-			BundleConfig::create(CalendarExtendedBundle::class)
-				->setLoadAfter(
-					[
-						'Contao\CoreBundle\ContaoCoreBundle',
-						'Contao\CalendarBundle\ContaoCalendarBundle',
-						'MenAtWork\MultiColumnWizard'
-					]
-				)
-		];
-	}
+    /**
+     * {@inheritdoc}
+     */
+    public function getBundles(ParserInterface $parser)
+    {
+        return [
+            BundleConfig::create(CalendarExtendedBundle::class)
+                ->setLoadAfter(
+                    [
+                        'Contao\CoreBundle\ContaoCoreBundle',
+                        'Contao\CalendarBundle\ContaoCalendarBundle',
+                        'MenAtWork\MultiColumnWizard'
+                    ]
+                )
+        ];
+    }
 }

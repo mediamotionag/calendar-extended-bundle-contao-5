@@ -60,13 +60,13 @@ $GLOBALS['TL_CONFIG']['tl_calendar_events']['filter']['location_plz'] = [];
  */
 ArrayUtil::arrayInsert($GLOBALS['FE_MOD'], 99, array
 (
-	'events' => array
-	(
-		'timetable' => 'Kmielke\CalendarExtendedBundle\ModuleTimeTable',
-		'yearview' => 'Kmielke\CalendarExtendedBundle\ModuleYearView',
-		'evr_registration' => 'Kmielke\CalendarExtendedBundle\ModuleEventRegistration',
-		'fullcalendar' => 'Kmielke\CalendarExtendedBundle\ModuleFullcalendar'
-	)
+    'events' => array
+    (
+        'timetable' => 'Kmielke\CalendarExtendedBundle\ModuleTimeTable',
+        'yearview' => 'Kmielke\CalendarExtendedBundle\ModuleYearView',
+        'evr_registration' => 'Kmielke\CalendarExtendedBundle\ModuleEventRegistration',
+        'fullcalendar' => 'Kmielke\CalendarExtendedBundle\ModuleFullcalendar'
+    )
 ));
 
 // Replace Contao Module
@@ -81,26 +81,26 @@ $GLOBALS['FE_MOD']['events']['eventreader'] = 'Kmielke\CalendarExtendedBundle\Mo
 
 ArrayUtil::arrayInsert($GLOBALS['BE_FFL'], 99, array
 (
-	'timePeriodExt' => 'Kmielke\CalendarExtendedBundle\TimePeriodExt',
+    'timePeriodExt' => 'Kmielke\CalendarExtendedBundle\TimePeriodExt',
 ));
 
 // config.php
 $GLOBALS['NOTIFICATION_CENTER']['NOTIFICATION_TYPE']['event_registration'] = array
 (
-	// Type
-	'registration_status' => array(
-		'recipients' => array('recipient_email', 'admin_email'),
-		'email_subject' => array('page_title', 'recipient_*'),
-		'email_text' => array('recipient_*', 'raw_data',),
-		'email_html' => array('recipient_*', 'raw_data',),
-		'email_sender_name' => array('admin_email', 'page_title'),
-		'email_sender_address' => array('admin_email'),
-		'email_recipient_cc' => array('recipient_email'),
-		'email_recipient_bcc' => array('recipient_email'),
-		'email_replyTo' => array('recipient_email'),
-		'file_name' => array('recipient_email'),
-		'file_content' => array('recipient_email')
-	)
+    // Type
+    'registration_status' => array(
+        'recipients' => array('recipient_email', 'admin_email'),
+        'email_subject' => array('page_title', 'recipient_*'),
+        'email_text' => array('recipient_*', 'raw_data',),
+        'email_html' => array('recipient_*', 'raw_data',),
+        'email_sender_name' => array('admin_email', 'page_title'),
+        'email_sender_address' => array('admin_email'),
+        'email_recipient_cc' => array('recipient_email'),
+        'email_recipient_bcc' => array('recipient_email'),
+        'email_replyTo' => array('recipient_email'),
+        'file_name' => array('recipient_email'),
+        'file_content' => array('recipient_email')
+    )
 );
 
 /**
