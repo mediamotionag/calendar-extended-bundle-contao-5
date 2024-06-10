@@ -1,6 +1,6 @@
 {
   "name": "kmielke/calendar-extended-bundle",
-  "description": "Contao 4 LTS calendar extension bundle. Better recurring events and exceptions.",
+  "description": "Contao 5 LTS calendar extension bundle. Better recurring events and exceptions.",
   "keywords": [
     "contao",
     "fullcalendar",
@@ -16,10 +16,14 @@
     {
       "name": "Kester Mielke",
       "email": "kester.mielke@posteo.de"
+    },
+    {
+      "name": "Media Motion AG",
+      "email": "technik@mediamotion.ch"
     }
   ],
   "require": {
-    "php": ">=5.6.0",
+    "php": "^7.4 || ^8.0",
     "contao/core-bundle": "^5.3",
     "contao/calendar-bundle": "^5.3",
     "menatwork/contao-multicolumnwizard-bundle": "^3.4",
