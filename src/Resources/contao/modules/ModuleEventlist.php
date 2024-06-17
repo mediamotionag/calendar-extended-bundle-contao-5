@@ -374,6 +374,7 @@ class ModuleEventlist extends EventsExt
 
             /** @var FrontendTemplate|object $objTemplate */
             $objTemplate = new FrontendTemplate($this->cal_template ?: 'event_list');
+
             $objTemplate->setData($event);
 
             // Month header
@@ -417,36 +418,6 @@ class ModuleEventlist extends EventsExt
             $contentUrl = \Contao\System::getContainer()->get('contao.routing.content_url_generator');
             $objEvent = \Contao\CalendarEventsModel::findByPk($event['id']);
             $objTemplate->href = $contentUrl->generate($objEvent);
-
-            $objTemplate->addImage = false;
-
-            // Add an image
-            if ($event['addImage'] && $event['singleSRC'] != '') {
-                $objModel = FilesModel::findByUuid($event['singleSRC']);
-
-                $rootDir = System::getContainer()->getParameter('kernel.project_dir');
-
-                if ($objModel === null) {
-                    if (!Validator::isUuid($event['singleSRC'])) {
-                        $objTemplate->text = '<p class="error">' . $GLOBALS['TL_LANG']['ERR']['version2format'] . '</p>';
-                    }
-                } elseif (is_file($rootDir . '/' . $objModel->path)) {
-                    if ($imgSize) {
-                        $event['size'] = $imgSize;
-                    }
-
-                    $event['singleSRC'] = $objModel->path;
-
-                    $objImageStudio = \Contao\System::getContainer()->get('contao.image.studio');
-                    $figureBuilder = $objImageStudio->createFigureBuilder();
-                    $figureBuilder->fromFilesModel($objModel);
-                    if ($imgSize) {
-                        $figureBuilder->setSize($imgSize);
-                    }
-                    $figure = $figureBuilder->build();
-                    $objTemplate->setData($figure->getLegacyTemplateData());
-                }
-            }
 
             $objTemplate->showRecurrences = $showRecurrences;
             $objTemplate->enclosure = array();
