@@ -13,6 +13,8 @@
 
 //namespace Kmielke\CalendarExtendedBundle;
 
+use Contao\BackendUser;
+
 /**
  * Add palettes to tl_module
  */
@@ -385,7 +387,6 @@ class calendar_Ext extends Backend
 	public function __construct()
 	{
 		parent::__construct();
-		$this->import('BackendUser', 'User');
 	}
 
 
@@ -545,7 +546,7 @@ class calendar_Ext extends Backend
 	 */
 	public function getCalendars()
 	{
-		if (!$this->User->isAdmin && !is_array($this->User->calendars)) {
+		if (!BackendUser::getInstance()->isAdmin && !is_array(BackendUser::getInstance()->calendars)) {
 			return array();
 		}
 
@@ -553,7 +554,7 @@ class calendar_Ext extends Backend
 		$objCalendars = $this->Database->execute("SELECT id, title FROM tl_calendar WHERE isHolidayCal != 1 ORDER BY title");
 
 		while ($objCalendars->next()) {
-			if ($this->User->isAdmin || $this->User->hasAccess($objCalendars->id, 'calendars')) {
+			if (BackendUser::getInstance()->isAdmin || BackendUser::getInstance()->hasAccess($objCalendars->id, 'calendars')) {
 				$arrCalendars[$objCalendars->id] = $objCalendars->title;
 			}
 		}
@@ -568,7 +569,7 @@ class calendar_Ext extends Backend
 	 */
 	public function getHolidays()
 	{
-		if (!$this->User->isAdmin && !is_array($this->User->calendars)) {
+		if (!BackendUser::getInstance()->isAdmin && !is_array(BackendUser::getInstance()->calendars)) {
 			return array();
 		}
 
@@ -576,7 +577,7 @@ class calendar_Ext extends Backend
 		$objCalendars = $this->Database->execute("SELECT id, title FROM tl_calendar WHERE isHolidayCal = 1 ORDER BY title");
 
 		while ($objCalendars->next()) {
-			if ($this->User->isAdmin || $this->User->hasAccess($objCalendars->id, 'calendars')) {
+			if (BackendUser::getInstance()->isAdmin || BackendUser::getInstance()->hasAccess($objCalendars->id, 'calendars')) {
 				$arrCalendars[$objCalendars->id] = $objCalendars->title;
 			}
 		}

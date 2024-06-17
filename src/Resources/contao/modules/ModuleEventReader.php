@@ -10,26 +10,27 @@
 
 namespace Kmielke\CalendarExtendedBundle;
 
-use BackendTemplate;
-use Calendar;
-use CalendarModel;
-use Config;
+use Contao\BackendTemplate;
+use Contao\Calendar;
+use Contao\CalendarModel;
+use Contao\Config;
 use Contao\CoreBundle\Exception\PageNotFoundException;
 use Contao\Environment;
 use Contao\PageModel;
 use Contao\System;
-use ContentModel;
-use Date;
-use Events;
-use FilesModel;
-use Form;
-use FrontendTemplate;
-use Input;
-use ModuleLoader;
+use Contao\ContentModel;
+use Contao\Date;
+use Contao\Events;
+use Contao\FilesModel;
+use Contao\Form;
+use Contao\FrontendTemplate;
+use Contao\Input;
+use Contao\ModuleLoader;
 use stdClass;
-use StringUtil;
-use UserModel;
-use Validator;
+use Contao\StringUtil;
+use Contao\UserModel;
+use Contao\Validator;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Front end module "event reader".
@@ -53,7 +54,7 @@ class ModuleEventReader extends EventsExt
      */
     public function generate()
     {
-        if (TL_MODE == 'BE') {
+        if (System::getContainer()->get('contao.routing.scope_matcher')->isBackendRequest(System::getContainer()->get('request_stack')->getCurrentRequest() ?? Request::create(''))) {
             /** @var BackendTemplate|object $objTemplate */
             $objTemplate = new BackendTemplate('be_wildcard');
 
@@ -67,24 +68,13 @@ class ModuleEventReader extends EventsExt
         }
 
         // Set the item from the auto_item parameter
-        if (!isset($_GET['events']) && Config::get('useAutoItem') && isset($_GET['auto_item'])) {
-            Input::setGet('events', Input::get('auto_item'));
-        }
-
-        // Do not index or cache the page if no event has been specified
-        if (!Input::get('events')) {
-            /** @var \PageModel $objPage */
-            global $objPage;
-
-            $objPage->noSearch = 1;
-            $objPage->cache = 0;
-
-            return '';
+        if (!isset($_GET['events']) && \Contao\Config::get('useAutoItem') && isset($_GET['auto_item'])) {
+            \Contao\Input::setGet('events', \Contao\Input::get('auto_item'));
         }
 
         $cals = ($this->cal_holiday)
-            ? array_merge(deserialize($this->cal_calendar), deserialize($this->cal_holiday))
-            : deserialize($this->cal_calendar);
+            ? array_merge(deserialize($this->cal_calendar), \Contao\StringUtil::deserialize($this->cal_holiday))
+            : \Contao\StringUtil::deserialize($this->cal_calendar);
         $this->cal_calendar = $this->sortOutProtected($cals);
 
         // Do not index or cache the page if there are no calendars

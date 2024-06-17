@@ -413,6 +413,11 @@ class ModuleEventlist extends EventsExt
                 $objTemplate->date = $event['firstDate'];
             }
 
+            // Get the href
+            $contentUrl = \Contao\System::getContainer()->get('contao.routing.content_url_generator');
+            $objEvent = \Contao\CalendarEventsModel::findByPk($event['id']);
+            $objTemplate->href = $contentUrl->generate($objEvent);
+
             $objTemplate->addImage = false;
 
             // Add an image
@@ -450,7 +455,6 @@ class ModuleEventlist extends EventsExt
             if ($event['addEnclosure']) {
                 $this->addEnclosuresToTemplate($objTemplate, $event);
             }
-
 
             // schema.org information
             if (method_exists(Events::class, 'getSchemaOrgData')) {
@@ -500,7 +504,7 @@ class ModuleEventlist extends EventsExt
             /** @var BackendTemplate|object $objTemplate */
             $objTemplate = new BackendTemplate('be_wildcard');
 
-            $objTemplate->wildcard = '### ' . utf8_strtoupper($GLOBALS['TL_LANG']['FMD']['eventlist'][0]) . ' ###';
+            $objTemplate->wildcard = '### ' . strtoupper($GLOBALS['TL_LANG']['FMD']['eventlist'][0]) . ' ###';
             $objTemplate->title = $this->headline;
             $objTemplate->id = $this->id;
             $objTemplate->link = $this->name;
