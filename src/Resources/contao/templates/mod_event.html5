@@ -4,8 +4,4 @@
 
 <?= $this->event ?>
 
-<!-- indexer::stop -->
-<p class="back button-wrapper"><a class="button button--back" href="<?= $this->referer ?>" title="<?= $this->back ?>"><?= $this->back ?></a></p>
-<!-- indexer::continue -->
-
 <?php $this->endblock(); ?>

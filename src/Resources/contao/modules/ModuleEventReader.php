@@ -561,8 +561,6 @@ class ModuleEventReader extends EventsExt
             $objCalendar = $objEvent->getRelated('pid');
             $this->Template->allowComments = $objCalendar->allowComments;
 
-            dump($objPage);
-
             // Write the page title and description to the meta data
             ToolboxService::setPageHeaderMeta(array(
                 'title' => $objPage->pageTitle,
