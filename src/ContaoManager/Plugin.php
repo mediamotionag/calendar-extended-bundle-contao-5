@@ -8,15 +8,14 @@
  * @license LGPL-3.0+
  */
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Kmielke\CalendarExtendedBundle\ContaoManager;
-
-use Kmielke\CalendarExtendedBundle\CalendarExtendedBundle;
 
 use Contao\ManagerPlugin\Bundle\BundlePluginInterface;
 use Contao\ManagerPlugin\Bundle\Config\BundleConfig;
 use Contao\ManagerPlugin\Bundle\Parser\ParserInterface;
+use Kmielke\CalendarExtendedBundle\CalendarExtendedBundle;
 
 /**
  * Plugin for the Contao Manager.

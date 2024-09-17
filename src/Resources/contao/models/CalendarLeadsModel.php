@@ -11,12 +11,16 @@
 namespace Kmielke\CalendarExtendedBundle;
 
 
+use Contao\Database;
+use Contao\Database\Result;
+use Contao\Model;
+
 /**
  * Reads leads
  *
  * @author    Kester Mielke
  */
-class CalendarLeadsModel extends \Model
+class CalendarLeadsModel extends Model
 {
 
     /**
@@ -49,10 +53,8 @@ class CalendarLeadsModel extends \Model
         $sql = implode(' ', $arrsql);
 
         // und ausführen
-        $objResult = \Database::getInstance()->prepare($sql)->execute($fid, $eid, $email);
-        $found = ($objResult->email === $email) ? false : true;
-
-        return $found;
+        $objResult = Database::getInstance()->prepare($sql)->execute($fid, $eid, $email);
+        return ($objResult->email === $email) ? false : true;
     }
 
 
@@ -60,7 +62,7 @@ class CalendarLeadsModel extends \Model
      * @param $fid int formularid
      * @param $eid int eventid
      *
-     * @return \Database\Result|object
+     * @return Result|object
      */
     public static function regCountByFormEvent($fid, $eid)
     {
@@ -77,10 +79,8 @@ class CalendarLeadsModel extends \Model
         $sql = implode(' ', $arrsql);
 
         // und ausführen
-        $objResult = \Database::getInstance()->prepare($sql)->execute($fid, $eid);
-        $count = ($objResult->count) ? $objResult->count : 0;
-
-        return $count;
+        $objResult = Database::getInstance()->prepare($sql)->execute($fid, $eid);
+        return ($objResult->count) ? $objResult->count : 0;
     }
 
 
@@ -89,7 +89,7 @@ class CalendarLeadsModel extends \Model
      * @param $eid int eventid
      * @param $mail string email
      *
-     * @return \Database\Result|object
+     * @return Result|object
      */
     public static function findByLeadEventMail($lid, $eid, $mail)
     {
@@ -107,7 +107,7 @@ class CalendarLeadsModel extends \Model
         $sql = implode(' ', $arrsql);
 
         // und ausführen
-        $objResult = \Database::getInstance()->prepare($sql)->execute((int)$lid, "eventid", (int)$eid, "email", $mail);
+        $objResult = Database::getInstance()->prepare($sql)->execute((int)$lid, "eventid", (int)$eid, "email", $mail);
         if (!$objResult || $objResult->numRows === 0) {
             return false;
         }
@@ -119,14 +119,14 @@ class CalendarLeadsModel extends \Model
     /**
      * @param $pid
      *
-     * @return \Database\Result|object
+     * @return Result|object
      */
     public static function findByPid($pid)
     {
         // SQL bauen
         $sql = 'select pid, name, value from ' . static::$strTableDetail . ' where pid = ? order by id';
         // und ausführen
-        return \Database::getInstance()->prepare($sql)->execute($pid);
+        return Database::getInstance()->prepare($sql)->execute($pid);
     }
 
 
@@ -166,7 +166,7 @@ class CalendarLeadsModel extends \Model
         // SQL bauen
         $sql = 'update ' . static::$strTableDetail . ' set value = ?, label = ? where pid = ? and name = "published"';
         // und ausführen
-        $objResult = \Database::getInstance()->prepare($sql)->execute((int)$value, (int)$value, (int)$pid);
+        $objResult = Database::getInstance()->prepare($sql)->execute((int)$value, (int)$value, (int)$pid);
 
         return (bool)$objResult;
     }

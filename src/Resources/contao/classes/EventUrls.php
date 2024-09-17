@@ -15,6 +15,7 @@
 /**
  * Namespace
  */
+
 namespace Kmielke\CalendarExtendedBundle;
 
 /**

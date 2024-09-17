@@ -15,6 +15,7 @@
 /**
  * Namespace
  */
+
 namespace Kmielke\CalendarExtendedBundle;
 
 use Contao\Widget;
@@ -63,7 +64,7 @@ class TimePeriodExt extends Widget
     {
         switch ($strKey) {
             case 'value':
-                $this->varValue = deserialize($varValue);
+                $this->varValue = \Contao\StringUtil::deserialize($varValue);
                 break;
 
             case 'maxlength':
@@ -75,7 +76,7 @@ class TimePeriodExt extends Widget
                 break;
 
             case 'options':
-                $varValue = deserialize($varValue);
+                $varValue = \Contao\StringUtil::deserialize($varValue);
                 $this->arrValues = $varValue[0];
                 $this->arrUnits = $varValue[1];
                 break;
@@ -86,6 +87,41 @@ class TimePeriodExt extends Widget
         }
     }
 
+    /**
+     * Generate the widget and return it as string
+     * @return string
+     */
+    public function generate()
+    {
+        $arrValues = array();
+        $arrUnits = array();
+
+        //$arrValues[] = '<option value="">-</option>';
+        foreach ($this->arrValues as $arrValue) {
+            $arrValues[] = sprintf('<option value="%s"%s>%s</option>',
+                \Contao\StringUtil::specialchars($arrValue['value']),
+                ((is_array($this->varValue) && in_array($arrValue['value'], $this->varValue)) ? ' selected="selected"' : ''),
+                $arrValue['label']);
+        }
+
+        foreach ($this->arrUnits as $arrUnit) {
+            $arrUnits[] = sprintf('<option value="%s"%s>%s</option>',
+                \Contao\StringUtil::specialchars($arrUnit['value']),
+                ((is_array($this->varValue) && in_array($arrUnit['value'], $this->varValue)) ? ' selected="selected"' : ''),
+                $arrUnit['label']);
+        }
+
+        if (!is_array($this->varValue)) {
+            $this->varValue = array('value' => $this->varValue);
+        }
+
+        return sprintf('<select name="%s[value]" class="tl_select_interval" onfocus="Backend.getScrollOffset();">%s</select> <select name="%s[unit]" class="tl_select_interval" onfocus="Backend.getScrollOffset();">%s</select>%s',
+            $this->strName,
+            implode('', $arrValues),
+            $this->strName,
+            implode('', $arrUnits),
+            $this->wizard);
+    }
 
     /**
      * Do not validate unit fields
@@ -101,42 +137,5 @@ class TimePeriodExt extends Widget
         }
 
         return $varInput;
-    }
-
-
-    /**
-     * Generate the widget and return it as string
-     * @return string
-     */
-    public function generate()
-    {
-        $arrValues = array();
-        $arrUnits = array();
-
-        //$arrValues[] = '<option value="">-</option>';
-        foreach ($this->arrValues as $arrValue) {
-            $arrValues[] = sprintf('<option value="%s"%s>%s</option>',
-                specialchars($arrValue['value']),
-                ((is_array($this->varValue) && in_array($arrValue['value'], $this->varValue)) ? ' selected="selected"' : ''),
-                $arrValue['label']);
-        }
-
-        foreach ($this->arrUnits as $arrUnit) {
-            $arrUnits[] = sprintf('<option value="%s"%s>%s</option>',
-                specialchars($arrUnit['value']),
-                ((is_array($this->varValue) && in_array($arrUnit['value'], $this->varValue)) ? ' selected="selected"' : ''),
-                $arrUnit['label']);
-        }
-
-        if (!is_array($this->varValue)) {
-            $this->varValue = array('value' => $this->varValue);
-        }
-
-        return sprintf('<select name="%s[value]" class="tl_select_interval" onfocus="Backend.getScrollOffset();">%s</select> <select name="%s[unit]" class="tl_select_interval" onfocus="Backend.getScrollOffset();">%s</select>%s',
-            $this->strName,
-            implode('', $arrValues),
-            $this->strName,
-            implode('', $arrUnits),
-            $this->wizard);
     }
 }
